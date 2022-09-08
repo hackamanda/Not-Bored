@@ -7,7 +7,14 @@
 
 import UIKit
 
+protocol InitialViewDelegate: AnyObject {
+    func navigateToActivities()
+    func navigateToTerms()
+}
+
 class InitialView: UIView {
+    
+    weak var delegate: InitialViewDelegate?
 
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -29,7 +36,7 @@ class InitialView: UIView {
     private lazy var nameTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        
+        textField.borderStyle = .roundedRect
         return textField
     }()
     
@@ -38,6 +45,7 @@ class InitialView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .systemBlue
         button.setTitle("Start", for: .normal)
+        button.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
         //button.configuration = UIButton.Configuration.plain()
         return button
     }()
@@ -46,6 +54,7 @@ class InitialView: UIView {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Terms and conditions", for: .normal)
+        button.addTarget(self, action: #selector(termsButtonTapped), for: .touchUpInside)
         button.setTitleColor(.red, for: .normal)
         
         return button
@@ -60,6 +69,13 @@ class InitialView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc func startButtonTapped() {
+        delegate?.navigateToActivities()
+    }
+    
+    @objc func termsButtonTapped() {
+        delegate?.navigateToTerms()
+    }
 }
 
 extension InitialView: ViewCode {
@@ -72,38 +88,72 @@ extension InitialView: ViewCode {
     }
     
     func setupConstrains() {
-        let titleLabelTop = titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 50)
-        let titleLabelCenterX = titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor)
-        
-        let nameLabelTop = nameLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 30)
-        let nameLabelLeading = nameLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20)
-        
-        let nameTextFieldTop = nameTextField.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 20)
-        let nameTextFieldLeading = nameTextField.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20)
-        let nameTextFieldTrailing = nameTextField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20)
-        
-        let startButtonBottom = startButton.bottomAnchor.constraint(equalTo: termsButton.topAnchor, constant: -70)
-        let startButtonLeading = startButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20)
-        let startButtonTrailing = startButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20)
-        let startButtonHeight = startButton.heightAnchor.constraint(equalToConstant: 50)
-        
-        let termsButtonBottom = termsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -50)
-        let termsButtonLeading = termsButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20)
-        let termsButtonTrailing = termsButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: 20)
-        let termsButtonHeight = termsButton.heightAnchor.constraint(equalToConstant: 30)
-        
-        NSLayoutConstraint.activate([
-            titleLabelTop, titleLabelCenterX,
-            nameLabelTop, nameLabelLeading,
-            nameTextFieldTop, nameTextFieldLeading, nameTextFieldTrailing,
-            startButtonBottom, startButtonLeading, startButtonTrailing, startButtonHeight,
-            termsButtonBottom, termsButtonLeading, termsButtonTrailing, termsButtonHeight
-        ])
+        titleLabelConstraints()
+        nameLabelConstraints()
+        nameTextFieldConstraints()
+        startButtonConstraints()
+        termsButtonConstraints()
     }
     
-    func setupExtraConfiguration() {
+    private func titleLabelConstraints() {
+        let constraints = [
+            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 50),
+            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+        ]
         
+        constraints.forEach { constraint in
+            constraint.isActive = true
+        }
     }
     
+    private func nameLabelConstraints() {
+        let constraints = [
+            nameLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 30),
+            nameLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
+        ]
+        
+        constraints.forEach { constraint in
+            constraint.isActive = true
+        }
+    }
     
+    private func nameTextFieldConstraints() {
+        let constraints = [
+            nameTextField.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 20),
+            nameTextField.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            nameTextField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20),
+        ]
+        
+        constraints.forEach { constraint in
+            constraint.isActive = true
+        }
+    }
+    
+    private func startButtonConstraints() {
+        let constraints = [
+            startButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            startButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            startButton.heightAnchor.constraint(equalToConstant: 50),
+            startButton.bottomAnchor.constraint(equalTo: termsButton.topAnchor, constant: -70),
+        ]
+        
+        constraints.forEach { constraint in
+            constraint.isActive = true
+        }
+    }
+    
+    private func termsButtonConstraints() {
+        let constraints = [
+            termsButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            termsButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+//            termsButton.heightAnchor.constraint(equalToConstant: 30),
+            termsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
+        ]
+        
+        constraints.forEach { constraint in
+            constraint.isActive = true
+        }
+    }
+    
+    func setupExtraConfiguration() { }
 }

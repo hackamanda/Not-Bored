@@ -18,8 +18,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: scene)
         window?.makeKeyAndVisible()
+        window?.windowScene = scene
         window?.backgroundColor = .systemBackground
-        window?.rootViewController = InitialViewController()
+//        window?.rootViewController = ActivitiesViewController()
+        window?.rootViewController = UINavigationController(rootViewController: InitialViewController())
          
     }
 }

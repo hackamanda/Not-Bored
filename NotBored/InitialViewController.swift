@@ -10,33 +10,31 @@ import UIKit
 class InitialViewController: UIViewController {
     
     private lazy var initialView: InitialView = {
-        let initialView = InitialView()
-        return initialView
+        let view = InitialView()
+        view.delegate = self
+        return view
     }()
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         loadView()
-        //view.backgroundColor = .systemPink
         
     }
     
     override func loadView() {
         view = initialView
     }
+}
+
+extension InitialViewController: InitialViewDelegate {
+    func navigateToTerms() {
+        let termsViewController = TermsViewConstroller()
+        termsViewController.modalPresentationStyle = .fullScreen
+        present(termsViewController, animated: true)
+    }
     
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
+    func navigateToActivities() {
+        let activitiesViewController = ActivitiesViewController()
+        navigationController?.pushViewController(activitiesViewController, animated: true)
+    }
 }
