@@ -9,30 +9,24 @@ import Foundation
 import UIKit
 
 class TermsViewConstroller: UIViewController {
+    // MARK: - Screen objects
     private lazy var termsView: TermsView = {
         let view = TermsView()
+        view.backgroundColor = UIColor(red: 32/255, green: 32/255, blue: 32/255, alpha: 1)
         view.delegate = self
         return view
     }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        loadView()
-    }
-    
+    // MARK: - Life cycle methods
     override func loadView() {
         view = termsView
     }
-    
-    func voltar() {
-        
-    }
 }
 
-extension TermsViewConstroller: TermsViewDelegate {
+// MARK: - Terms view delegate
+extension TermsViewConstroller: TermsViewDelegateProtocol {
+    // MARK: - Navigation methods
     func returnToInitial() {
         dismiss(animated: true)
     }
-    
-    
 }

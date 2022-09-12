@@ -8,19 +8,22 @@
 import UIKit
 
 class SuggestionView: UIView {
-    
+    // MARK: - Screen objects
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-//        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Take a bubble bath"
-        label.textColor = .blue
-        label.font = UIFont(name: label.font.fontName, size: 20)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = activity.activityName
+        label.font = UIFont.boldSystemFont(ofSize: 40)
+        label.textColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
+        label.textAlignment = .center
+        label.numberOfLines = 0
         return label
     }()
     
     private lazy var participantsImage: UIImageView = {
         let image = UIImage(systemName: "person.fill")
         let imageView = UIImageView(image: image)
+        imageView.tintColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return imageView
     }()
@@ -28,24 +31,25 @@ class SuggestionView: UIView {
     private lazy var participantsLabel: UILabel = {
         let label = UILabel()
         label.text = "Participants"
+        label.font = UIFont.systemFont(ofSize: 22)
+        label.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         return label
     }()
     
     private lazy var participantsNumberLabel: UILabel = {
         let label = UILabel()
-        label.text = "2"
+        label.text = String(activity.participants)
+        label.font = UIFont.systemFont(ofSize: 22)
+        label.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return label
     }()
     
     private lazy var stackView1: UIStackView = {
         let stackView = UIStackView()
-//        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.spacing = 8
-//        stackView.distribution = .fill
-//        stackView.alignment = .leading
         stackView.addArrangedSubview(participantsImage)
         stackView.addArrangedSubview(participantsLabel)
         stackView.addArrangedSubview(participantsNumberLabel)
@@ -56,6 +60,7 @@ class SuggestionView: UIView {
     private lazy var priceImage: UIImageView = {
         let image = UIImage(systemName: "dollarsign.circle.fill")
         let imageView = UIImageView(image: image)
+        imageView.tintColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return imageView
     }()
@@ -63,13 +68,17 @@ class SuggestionView: UIView {
     private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.text = "Price"
+        label.font = UIFont.systemFont(ofSize: 22)
+        label.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         return label
     }()
     
     private lazy var priceLevelLabel: UILabel = {
         let label = UILabel()
-        label.text = "Medium"
+        label.text = activity.priceCategory
+        label.font = UIFont.systemFont(ofSize: 22)
+        label.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return label
     }()
@@ -78,8 +87,6 @@ class SuggestionView: UIView {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 8
-//        stackView.distribution = .fill
-//        stackView.alignment = .leading
         stackView.addArrangedSubview(priceImage)
         stackView.addArrangedSubview(priceLabel)
         stackView.addArrangedSubview(priceLevelLabel)
@@ -90,21 +97,17 @@ class SuggestionView: UIView {
     private lazy var relaxationImage: UIImageView = {
         let image = UIImage(systemName: "list.bullet")
         let imageView = UIImageView(image: image)
+        imageView.tintColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return imageView
     }()
     
     private lazy var relaxationLabel: UILabel = {
         let label = UILabel()
-        label.text = "Relaxation"
+        label.text = activity.type.capitalized
+        label.font = UIFont.systemFont(ofSize: 22)
+        label.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        return label
-    }()
-    
-    private lazy var relaxationLevelLabel: UILabel = {
-        let label = UILabel()
-        label.text = "---"
-        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return label
     }()
     
@@ -112,39 +115,48 @@ class SuggestionView: UIView {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 8
-//        stackView.distribution = .fill
-//        stackView.alignment = .leading
         stackView.addArrangedSubview(relaxationImage)
         stackView.addArrangedSubview(relaxationLabel)
-        stackView.addArrangedSubview(relaxationLevelLabel)
         relaxationImageConstraints()
         return stackView
     }()
     
     private lazy var stackViewGlobal: UIStackView = {
-        let stackView = UIStackView()
+        let stackView = UIStackView(arrangedSubviews: [stackView1, stackView2])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 8
-//        stackView.distribution = .fill
-//        stackView.alignment = .leading
-        stackView.addArrangedSubview(stackView1)
-        stackView.addArrangedSubview(stackView2)
-        stackView.addArrangedSubview(stackView3)
+        if isRamdom {
+            stackView.addArrangedSubview(stackView3)
+        }
         return stackView
     }()
 
     private lazy var tryButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .systemBlue
         button.setTitle("Try another", for: .normal)
+        button.configuration = UIButton.Configuration.filled()
+        button.tintColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
+        let color = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
+        button.setTitleColor(color, for: .normal)
+        button.configuration?.cornerStyle = .capsule
         button.addTarget(self, action: #selector(tryButtonTapped), for: .touchUpInside)
-        //button.configuration = UIButton.Configuration.plain()
+        
         return button
     }()
     
-    init() {
+    // MARK: - Properties
+    let activity: Activity
+    let isRamdom: Bool
+    let viewModel = ActivitiesViewModel()
+    let target: UIViewController
+    
+    // MARK: - Initializers
+    init(with activity: Activity, isRamdom: Bool, target: UIViewController) {
+        self.activity = activity
+        self.isRamdom = isRamdom
+        self.target = target
         super.init(frame: .zero)
         setup()
     }
@@ -153,11 +165,31 @@ class SuggestionView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Methods
+    func updateView(with activity: Activity) {
+        titleLabel.text = activity.activityName
+        participantsNumberLabel.text = String(activity.participants)
+        priceLevelLabel.text = activity.priceCategory
+        relaxationLabel.text = activity.type.capitalized
+    }
+    
+    // MARK: - Actions
     @objc func tryButtonTapped() {
-        print("Try Another")
+        let category = isRamdom ? nil : activity.type
+        viewModel.fetch(numberOfParticipants: activity.participants, category: category) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let activity):
+                    self.updateView(with: activity)
+                case .failure(let error):
+                    Notification.show(title: "Error", message: error.rawValue, target: self.target)
+                }
+            }
+        }
     }
 }
 
+// MARK: - View code
 extension SuggestionView: ViewCode {
     func setupSubViews() {
         addSubview(titleLabel)
@@ -173,8 +205,9 @@ extension SuggestionView: ViewCode {
     
     private func titleLabelConstraints() {
         let constraints = [
-            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 50),
-            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 56),
+            titleLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
         ]
         
         constraints.forEach { constraint in
@@ -196,10 +229,10 @@ extension SuggestionView: ViewCode {
     
     private func tryButtonConstraints() {
         let constraints = [
-            tryButton.heightAnchor.constraint(equalToConstant: 50),
-            tryButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            tryButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            tryButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            tryButton.heightAnchor.constraint(equalToConstant: 48),
+            tryButton.widthAnchor.constraint(equalToConstant: 250),
+            tryButton.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor),
+            tryButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
         ]
         
         constraints.forEach { constraint in
@@ -241,6 +274,4 @@ extension SuggestionView: ViewCode {
     }
     
     func setupExtraConfiguration() { }
-    
-    
 }
