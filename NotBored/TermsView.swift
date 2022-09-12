@@ -8,19 +8,13 @@
 import Foundation
 import UIKit
 
-protocol TermsViewDelegate: AnyObject {
-    func returnToInitial()
-}
-
 class TermsView: UIView {
-    
-    weak var delegate: TermsViewDelegate?
-    
+    // MARK: - Screen Objects
     private lazy var termsButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .close)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("X", for: .normal)
-        button.setTitleColor(.red, for: .normal)
+        button.backgroundColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
+        button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -29,8 +23,8 @@ class TermsView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Terms and conditions"
-        label.textColor = .blue
-        label.font = UIFont(name: label.font.fontName, size: 20)
+        label.font = UIFont.boldSystemFont(ofSize: 36)
+        label.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         return label
     }()
     
@@ -38,8 +32,8 @@ class TermsView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Not Bored"
-        label.textColor = .blue
-        label.font = UIFont(name: label.font.fontName, size: 20)
+        label.font = UIFont.boldSystemFont(ofSize: 36)
+        label.textColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
         return label
     }()
     
@@ -47,9 +41,9 @@ class TermsView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = getTerms()
-        label.textColor = .blue
         label.numberOfLines = 0
-        label.font = UIFont(name: label.font.fontName, size: 20)
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         return label
     }()
     
@@ -68,7 +62,11 @@ class TermsView: UIView {
         
         return scrollView
     }()
+    
+    // MARK: - Properties
+    weak var delegate: TermsViewDelegateProtocol?
 
+    // MARK: - Initializers
     init() {
         super.init(frame: .zero)
         setup()
@@ -78,16 +76,18 @@ class TermsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Methods
+    func getTerms() -> String {
+        return "The standard Lorem Ipsum passage, used since the 1500s \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nSection 1.10.32 of de Finibus Bonorum et Malorum, written by Cicero in 45 BC\n\nSed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
+    }
+    
+    // MARK: - Actions
     @objc func closeButtonTapped() {
         delegate?.returnToInitial()
     }
-    
-    func getTerms() -> String {
-        return "The standard Lorem Ipsum passage, used since the 1500s \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\nSection 1.10.32 of de Finibus Bonorum et Malorum, written by Cicero in 45 BC\n\nSed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?"
-
-    }
 }
 
+// MARK: - View code
 extension TermsView: ViewCode {
     func setupSubViews() {
         addSubview(termsButton)
@@ -108,6 +108,8 @@ extension TermsView: ViewCode {
         let constraints = [
             termsButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16),
             termsButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            termsButton.widthAnchor.constraint(equalToConstant: 32),
+            termsButton.heightAnchor.constraint(equalToConstant: 32),
         ]
         
         constraints.forEach { constraint in
@@ -178,6 +180,4 @@ extension TermsView: ViewCode {
     }
     
     func setupExtraConfiguration() { }
-    
-    
 }

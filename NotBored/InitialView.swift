@@ -7,46 +7,49 @@
 
 import UIKit
 
-protocol InitialViewDelegate: AnyObject {
-    func navigateToActivities()
-    func navigateToTerms()
-}
-
 class InitialView: UIView {
-    
-    weak var delegate: InitialViewDelegate?
-
+    // MARK: - Screen objects
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Not Bored"
-        label.textColor = .blue
-        label.font = UIFont(name: label.font.fontName, size: 20)
+        label.font = UIFont.boldSystemFont(ofSize: 40)
+        label.textColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
         return label
     }()
 
-    private lazy var nameLabel: UILabel = {
+    private lazy var participantsLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Participants"
-        label.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
+        label.font = UIFont.systemFont(ofSize: 22)
+        label.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         return label
     }()
     
-    private lazy var nameTextField: UITextField = {
+    private lazy var participantsTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.backgroundColor = UIColor(red: 64/255, green: 64/255, blue: 64/255, alpha: 1)
+        textField.textColor = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
         textField.borderStyle = .roundedRect
+        textField.keyboardType = .numberPad
+        textField.addTarget(self, action: #selector(textFieldDidChange), for: UIControl.Event.editingChanged)
         return textField
     }()
     
     private lazy var startButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .systemBlue
         button.setTitle("Start", for: .normal)
         button.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
-        //button.configuration = UIButton.Configuration.plain()
+        button.configuration = UIButton.Configuration.filled()
+        button.tintColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
+        let color = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
+        button.setTitleColor(color, for: .normal)
+        button.setTitleColor(color, for: .disabled)
+        button.configuration?.cornerStyle = .capsule
+        button.isEnabled = false
         return button
     }()
     
@@ -55,11 +58,16 @@ class InitialView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Terms and conditions", for: .normal)
         button.addTarget(self, action: #selector(termsButtonTapped), for: .touchUpInside)
-        button.setTitleColor(.red, for: .normal)
+        let color = UIColor(red: 230/255, green: 230/255, blue: 230/255, alpha: 1)
+        button.setTitleColor(color, for: .normal)
         
         return button
     }()
+    
+    // MARK: - Properties
+    weak var delegate: InitialViewDelegateProtocol?
 
+    // MARK: - Initializers
     init() {
         super.init(frame: .zero)
         setup()
@@ -69,8 +77,27 @@ class InitialView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Methods
+    @objc func textFieldDidChange() {
+        guard let text = participantsTextField.text,
+            let number = Int(text),
+            number > 0
+        else {
+            startButton.isEnabled = false
+            return
+        }
+        startButton.isEnabled = true
+    }
+    
+    // MARK: - Actions
     @objc func startButtonTapped() {
-        delegate?.navigateToActivities()
+        guard
+            let participantsText = participantsTextField.text,
+            let participants = Int(participantsText)
+        else {
+            return
+        }
+        delegate?.navigateToActivities(numberOfParticipants: participants)
     }
     
     @objc func termsButtonTapped() {
@@ -78,11 +105,12 @@ class InitialView: UIView {
     }
 }
 
+// MARK: - View code
 extension InitialView: ViewCode {
     func setupSubViews() {
         addSubview(titleLabel)
-        addSubview(nameLabel)
-        addSubview(nameTextField)
+        addSubview(participantsLabel)
+        addSubview(participantsTextField)
         addSubview(startButton)
         addSubview(termsButton)
     }
@@ -97,7 +125,7 @@ extension InitialView: ViewCode {
     
     private func titleLabelConstraints() {
         let constraints = [
-            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 50),
+            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 56),
             titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
         ]
         
@@ -108,8 +136,8 @@ extension InitialView: ViewCode {
     
     private func nameLabelConstraints() {
         let constraints = [
-            nameLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 30),
-            nameLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            participantsLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 112),
+            participantsLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16),
         ]
         
         constraints.forEach { constraint in
@@ -119,9 +147,10 @@ extension InitialView: ViewCode {
     
     private func nameTextFieldConstraints() {
         let constraints = [
-            nameTextField.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 20),
-            nameTextField.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            nameTextField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            participantsTextField.topAnchor.constraint(equalTo: participantsLabel.bottomAnchor, constant: 24),
+            participantsTextField.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            participantsTextField.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            participantsTextField.heightAnchor.constraint(equalToConstant: 56)
         ]
         
         constraints.forEach { constraint in
@@ -131,10 +160,10 @@ extension InitialView: ViewCode {
     
     private func startButtonConstraints() {
         let constraints = [
-            startButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            startButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            startButton.heightAnchor.constraint(equalToConstant: 50),
-            startButton.bottomAnchor.constraint(equalTo: termsButton.topAnchor, constant: -70),
+            startButton.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor),
+            startButton.widthAnchor.constraint(equalToConstant: 250),
+            startButton.heightAnchor.constraint(equalToConstant: 48),
+            startButton.bottomAnchor.constraint(equalTo: termsButton.topAnchor, constant: -24),
         ]
         
         constraints.forEach { constraint in
@@ -144,9 +173,7 @@ extension InitialView: ViewCode {
     
     private func termsButtonConstraints() {
         let constraints = [
-            termsButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),
             termsButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-//            termsButton.heightAnchor.constraint(equalToConstant: 30),
             termsButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
         ]
         

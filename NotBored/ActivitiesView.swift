@@ -7,33 +7,28 @@
 
 import UIKit
 
-protocol ActivitiesViewDelegate: AnyObject {
-    func navigateToSuggestion()
-}
-
 class ActivitiesView: UIView {
-    
-    weak var delegate: ActivitiesViewDelegate?
-
+    // MARK: - Screen objects
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero)
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.backgroundColor = UIColor(red: 32/255, green: 32/255, blue: 32/255, alpha: 1)
         tableView.register(ActivitiesTableViewCell.self, forCellReuseIdentifier: activitiesTableViewCellIdentifier)
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
     }()
     
+    // MARK: - Properties
+    let viewModel = ActivitiesViewModel()
+    weak var delegate: ActivitiesViewDelegateProtocol?
     private let activitiesTableViewCellIdentifier = "ActivitiesTableViewCell"
-    var activities: [String] = []
     
+    // MARK: - Initializers
     init() {
         super.init(frame: .zero)
         setup()
-        
-        activities.append("Elemento 1")
-        activities.append("Elemento 2")
-        activities.append("Elemento 3")
+        viewModel.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -41,9 +36,10 @@ class ActivitiesView: UIView {
     }
 }
 
+// MARK: - Table view data source
 extension ActivitiesView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return activities.count
+        return viewModel.count()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -51,18 +47,36 @@ extension ActivitiesView: UITableViewDataSource {
             return UITableViewCell()
         }
         let index = indexPath.row
-        cell.updateCell(with: activities[index])
+        let activityType = viewModel.currentActivity(inPosition: index)
+        cell.updateCell(with: activityType.category)
+        
+        // Levar isso para dentro da celula
+        cell.accessoryType = .disclosureIndicator
+        cell.tintColor = UIColor(red: 233/255, green: 186/255, blue: 67/255, alpha: 1)
+        let image = UIImage(systemName: "chevron.right")?.withRenderingMode(.alwaysTemplate)
+        let checkmark  = UIImageView(frame:CGRect(x:0, y:0, width:(image?.size.width)!, height:(image?.size.height)!));
+        checkmark.image = image
+        cell.accessoryView = checkmark
+        
         return cell
     }
 }
 
+// MARK: - Table view delegate
 extension ActivitiesView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath.row)
-        delegate?.navigateToSuggestion()
+        delegate?.activityCellTapped(activityType: viewModel.currentActivity(inPosition: indexPath.row))
     }
 }
 
+// MARK: - Activities view model delegate
+extension ActivitiesView: ActivitiesViewModelDelegateProtocol {
+    func reloadData() {
+        tableView.reloadData()
+    }
+}
+
+// MARK: - View code
 extension ActivitiesView: ViewCode {
     func setupSubViews() {
         addSubview(tableView)
